@@ -16,11 +16,29 @@
 //  You should have received a copy of the GNU General Public License
 //  along with MARIADB-TSCL.  If not, see <https://www.gnu.org/licenses/>.
 
-package general
+package reporting
 
-// VersionInfo provides a detailed information about the actual build
-type VersionInfo struct {
-	Version   string `json:"version"`
-	BuildDate string `json:"buildDate"`
-	GitCommit string `json:"gitCommit"`
+import (
+	"fmt"
+
+	"github.com/czcorpus/hltscl"
+	"github.com/rs/zerolog/log"
+)
+
+type Conf struct {
+	DB hltscl.PgConf `json:"db"`
+}
+
+func (conf *Conf) ValidateAndDefaults() error {
+	if conf == nil {
+		log.Warn().Msg("reporting not configured, APIGuard will be writing reporting records to log")
+		return nil
+	}
+	if conf.DB.Host == "" {
+		return fmt.Errorf("reporting set but the `host` is missing")
+	}
+	if conf.DB.Passwd == "" {
+		return fmt.Errorf("reporting set but the `password` is missing")
+	}
+	return nil
 }

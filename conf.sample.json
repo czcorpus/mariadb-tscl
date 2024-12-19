@@ -8,5 +8,15 @@
         "user": "kontext",
         "password": "********",
         "db": "kontext"
-    }
+    },
+    "reporting": {
+        "db": {
+            "user": "user",
+            "passwd": "********",
+            "host": "host",
+            "port": 5432,
+            "dbName": "reporting"
+        }
+    },
+    "instanceName": "kontext_mariadb"
 }

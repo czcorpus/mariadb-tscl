@@ -16,11 +16,29 @@
 //  You should have received a copy of the GNU General Public License
 //  along with MARIADB-TSCL.  If not, see <https://www.gnu.org/licenses/>.
 
-package general
+package reporting
 
-// VersionInfo provides a detailed information about the actual build
-type VersionInfo struct {
-	Version   string `json:"version"`
-	BuildDate string `json:"buildDate"`
-	GitCommit string `json:"gitCommit"`
+import "github.com/rs/zerolog/log"
+
+type NullWriter struct {
+}
+
+func (sw *NullWriter) LogErrors() {
+	log.Info().
+		Bool("fallbackReporting", true).
+		Msg("NullWriter.LogErrors()")
+}
+
+func (sw *NullWriter) Write(item Timescalable) {
+	log.Info().
+		Bool("fallbackReporting", true).
+		Any("record", item).
+		Msg("NullWriter.Write()")
+
+}
+
+func (sw *NullWriter) AddTableWriter(tableName string) {
+	log.Info().
+		Bool("fallbackReporting", true).
+		Msgf("NullWriter.AddTableWriter(%s)", tableName)
 }
