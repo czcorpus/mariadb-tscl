@@ -1,0 +1,12 @@
+{
+    "logging": {
+        "path": "/a/path/to/a/log/file",
+        "level": "info"
+    },
+    "db": {
+        "host": "kontext_db_host",
+        "user": "kontext",
+        "password": "********",
+        "db": "kontext"
+    }
+}
