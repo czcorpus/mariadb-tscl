@@ -1,0 +1,23 @@
+{
+    "logging": {
+        "path": "/a/path/to/a/log/file",
+        "level": "info"
+    },
+    "db": {
+        "host": "kontext_db_host",
+        "user": "kontext",
+        "password": "********",
+        "db": "kontext"
+    },
+    "reporting": {
+        "db": {
+            "user": "user",
+            "passwd": "********",
+            "host": "host",
+            "port": 5432,
+            "dbName": "reporting"
+        }
+    },
+    "instanceName": "kontext_mariadb",
+    "checkInterval": 10
+}
