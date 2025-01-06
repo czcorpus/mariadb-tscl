@@ -93,7 +93,7 @@ func main() {
 	tDBWriter.AddTableWriter(reporting.MariaDBTSCLStatusMonitoringTable)
 	tDBWriter.LogErrors()
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(conf.CheckInterval * time.Second)
 	go func(ctx context.Context, mariadb *sql.DB, tDBWriter reporting.ReportingWriter) {
 		for range ticker.C {
 			status, err := db.GetDBStatus(mariadb)

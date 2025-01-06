@@ -31,10 +31,11 @@ import (
 
 // Conf is a global configuration of the app
 type Conf struct {
-	Logging      logging.LoggingConf `json:"logging"`
-	InstanceName string              `json:"instanceName"`
-	DB           *db.Conf            `json:"db"`
-	Reporting    *reporting.Conf     `json:"reporting"`
+	Logging       logging.LoggingConf `json:"logging"`
+	InstanceName  string              `json:"instanceName"`
+	CheckInterval time.Duration       `json:"checkInterval"`
+	DB            *db.Conf            `json:"db"`
+	Reporting     *reporting.Conf     `json:"reporting"`
 }
 
 func (conf *Conf) GetLocation() *time.Location { // TODO

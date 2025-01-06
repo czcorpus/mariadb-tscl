@@ -18,5 +18,6 @@
             "dbName": "reporting"
         }
     },
-    "instanceName": "kontext_mariadb"
+    "instanceName": "kontext_mariadb",
+    "checkInterval": 10
 }
