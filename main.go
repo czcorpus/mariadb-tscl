@@ -36,6 +36,7 @@ import (
 	"github.com/czcorpus/mariadb-tscl/db"
 	"github.com/czcorpus/mariadb-tscl/general"
 	"github.com/czcorpus/mariadb-tscl/reporting"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 )
 
@@ -79,8 +80,9 @@ func main() {
 	}
 
 	var tDBWriter reporting.ReportingWriter
+	var pg *pgxpool.Pool
 	if conf.Reporting != nil {
-		pg, err := hltscl.CreatePool(conf.Reporting.DB)
+		pg, err = hltscl.CreatePool(conf.Reporting.DB)
 		if err != nil {
 			log.Fatal().Err(err)
 		}
@@ -116,6 +118,9 @@ func main() {
 
 	<-ctx.Done()
 	log.Info().Msg("Stopping...")
+	if pg != nil {
+		pg.Close()
+	}
 	err = mariadb.Close()
 	if err != nil {
 		log.Error().Err(err).Send()
