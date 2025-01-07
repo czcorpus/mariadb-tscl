@@ -9,4 +9,4 @@ create table mariadb_tscl_status_monitoring (
   slow_queries int,
   innodb_buffer_pool_reads int
 );
-select create_hypertable('apiguard_alarm_monitoring', 'time');
+select create_hypertable('mariadb_tscl_status_monitoring', 'time');
