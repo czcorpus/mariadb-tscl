@@ -76,7 +76,7 @@ func main() {
 
 	mariadb, err := db.OpenDB(conf.DB)
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Fatal().Err(err).Send()
 	}
 
 	var tDBWriter reporting.ReportingWriter
@@ -84,7 +84,7 @@ func main() {
 	if conf.Reporting != nil {
 		pg, err = hltscl.CreatePool(conf.Reporting.DB)
 		if err != nil {
-			log.Fatal().Err(err)
+			log.Fatal().Err(err).Send()
 		}
 		tDBWriter = reporting.NewReportingWriter(pg, conf.GetLocation(), ctx)
 	} else {
@@ -95,6 +95,12 @@ func main() {
 
 	ticker := time.NewTicker(conf.CheckInterval * time.Second)
 	go func(ctx context.Context, mariadb *sql.DB, tDBWriter reporting.ReportingWriter) {
+		initialStatus, err := db.GetDBStatus(mariadb)
+		if err != nil {
+			log.Error().Err(err).Send()
+		}
+		log.Debug().Any("initialStatus", initialStatus).Send()
+
 		for range ticker.C {
 			status, err := db.GetDBStatus(mariadb)
 			if err != nil {
@@ -104,14 +110,15 @@ func main() {
 				tDBWriter.Write(&reporting.ConnectionsStatus{
 					Created:          time.Now(),
 					Instance:         conf.InstanceName,
-					ComSelect:        status.ComSelect,
-					ComInsert:        status.ComInsert,
-					ComUpdate:        status.ComUpdate,
-					ComDelete:        status.ComDelete,
+					ComSelect:        status.ComSelect - initialStatus.ComSelect,
+					ComInsert:        status.ComInsert - initialStatus.ComInsert,
+					ComUpdate:        status.ComUpdate - initialStatus.ComUpdate,
+					ComDelete:        status.ComDelete - initialStatus.ComDelete,
 					ThreadsConnected: status.ThreadsConnected,
-					SlowQueries:      status.SlowQueries,
-					BufferPoolReads:  status.BufferPoolReads,
+					SlowQueries:      status.SlowQueries - initialStatus.SlowQueries,
+					BufferPoolReads:  status.BufferPoolReads - initialStatus.BufferPoolReads,
 				})
+				initialStatus = status
 			}
 		}
 	}(ctx, mariadb, tDBWriter)
