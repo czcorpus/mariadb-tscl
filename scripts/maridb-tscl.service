@@ -1,3 +1,7 @@
+# Note: the script expects cnc-monitoring user and group to exist
+# To add them:
+# useradd -r -s /bin/false cnc-monitoring
+
 [Unit]
 Description=MariaDB TSCL Service
 After=network.target
@@ -6,11 +10,9 @@ After=network.target
 Type=simple
 ExecStart=/opt/mariadb-tscl/bin/mariadb-tscl start /opt/mariadb-tscl/conf/conf.json
 Restart=on-failure
-# useradd -r -s /bin/false cnc-monitoring
-# groupadd cnc-monitoring
-# usermod -a -G cnc-monitoring cnc-monitoring
 User=cnc-monitoring
 Group=cnc-monitoring
 
 [Install]
 WantedBy=multi-user.target
+
