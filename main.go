@@ -95,30 +95,42 @@ func main() {
 
 	ticker := time.NewTicker(conf.CheckInterval * time.Second)
 	go func(ctx context.Context, mariadb *sql.DB, tDBWriter reporting.ReportingWriter) {
-		initialStatus, err := db.GetDBStatus(mariadb)
+		prevStatus, err := db.GetDBStatus(mariadb)
 		if err != nil {
-			log.Error().Err(err).Send()
+			log.Error().Err(err).Msg("failed to obtain initial db status")
 		}
-		log.Debug().Any("initialStatus", initialStatus).Send()
+		log.Debug().Any("prevStatus", prevStatus).Send()
 
 		for range ticker.C {
 			status, err := db.GetDBStatus(mariadb)
 			if err != nil {
-				log.Error().Err(err).Send()
+				log.Error().Err(err).Msg("failed to obtain db status")
+
 			} else {
-				log.Debug().Any("status", status).Send()
+				log.Debug().Any("currStatus", status).Send()
 				tDBWriter.Write(&reporting.ConnectionsStatus{
-					Created:          time.Now(),
-					Instance:         conf.InstanceName,
-					ComSelect:        status.ComSelect - initialStatus.ComSelect,
-					ComInsert:        status.ComInsert - initialStatus.ComInsert,
-					ComUpdate:        status.ComUpdate - initialStatus.ComUpdate,
-					ComDelete:        status.ComDelete - initialStatus.ComDelete,
-					ThreadsConnected: status.ThreadsConnected,
-					SlowQueries:      status.SlowQueries - initialStatus.SlowQueries,
-					BufferPoolReads:  status.BufferPoolReads - initialStatus.BufferPoolReads,
+					Created:  time.Now(),
+					Instance: conf.InstanceName,
+					Status: db.Status{
+						ThreadsConnected:             status.ThreadsConnected,
+						MaxUsedConnections:           status.MaxUsedConnections,
+						AbortedConnects:              status.AbortedConnects - prevStatus.AbortedConnects,
+						ComSelect:                    status.ComSelect - prevStatus.ComSelect,
+						ComInsert:                    status.ComInsert - prevStatus.ComInsert,
+						ComUpdate:                    status.ComUpdate - prevStatus.ComUpdate,
+						ComDelete:                    status.ComDelete - prevStatus.ComDelete,
+						SlowQueries:                  status.SlowQueries - prevStatus.SlowQueries,
+						InnodbBufferPoolReads:        status.InnodbBufferPoolReads - prevStatus.InnodbBufferPoolReads,
+						InnodbBufferPoolReadRequests: status.InnodbBufferPoolReadRequests - prevStatus.InnodbBufferPoolReadRequests,
+						InnodbRowLockTime:            status.InnodbRowLockTime - prevStatus.InnodbRowLockTime,
+						HandlerReadFirst:             status.HandlerReadFirst - prevStatus.HandlerReadFirst,
+						HandlerReadKey:               status.HandlerReadKey - prevStatus.HandlerReadKey,
+						HandlerReadNext:              status.HandlerReadNext - prevStatus.HandlerReadNext,
+						HandlerReadRnd:               status.HandlerReadRnd - prevStatus.HandlerReadRnd,
+						HandlerReadRndNext:           status.HandlerReadRndNext - prevStatus.HandlerReadRndNext,
+					},
 				})
-				initialStatus = status
+				prevStatus = status
 			}
 		}
 	}(ctx, mariadb, tDBWriter)
