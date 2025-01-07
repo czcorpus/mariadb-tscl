@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/czcorpus/hltscl"
+	"github.com/czcorpus/mariadb-tscl/db"
 )
 
 const MariaDBTSCLStatusMonitoringTable = "mariadb_tscl_status_monitoring"
@@ -39,27 +40,30 @@ type BackendActionType string
 // ----
 
 type ConnectionsStatus struct {
-	Created          time.Time `json:"created"`
-	Instance         string    `json:"instance"`
-	ComSelect        int       `json:"comSelect"`
-	ComInsert        int       `json:"comInsert"`
-	ComUpdate        int       `json:"comUpdate"`
-	ComDelete        int       `json:"comDelete"`
-	ThreadsConnected int       `json:"threadsConnected"`
-	SlowQueries      int       `json:"slowQueries"`
-	BufferPoolReads  int       `json:"bufferPoolReads"`
+	Created  time.Time `json:"created"`
+	Instance string    `json:"instance"`
+	db.Status
 }
 
 func (status *ConnectionsStatus) ToTimescaleDB(tableWriter *hltscl.TableWriter) *hltscl.Entry {
 	return tableWriter.NewEntry(status.Created).
 		Str("instance", status.Instance).
+		Int("threads_connected", status.ThreadsConnected).
+		Int("max_used_connections", status.MaxUsedConnections).
+		Int("aborted_connects", status.AbortedConnects).
 		Int("com_select", status.ComSelect).
 		Int("com_insert", status.ComInsert).
 		Int("com_update", status.ComUpdate).
 		Int("com_delete", status.ComUpdate).
-		Int("threads_connected", status.ThreadsConnected).
 		Int("slow_queries", status.SlowQueries).
-		Int("innodb_buffer_pool_reads", status.BufferPoolReads)
+		Int("innodb_buffer_pool_reads", status.InnodbBufferPoolReads).
+		Int("innodb_buffer_pool_read_requests", status.InnodbBufferPoolReadRequests).
+		Int("innodb_row_lock_time", status.InnodbRowLockTime).
+		Int("handler_read_first", status.HandlerReadFirst).
+		Int("handler_read_key", status.HandlerReadKey).
+		Int("handler_read_next", status.HandlerReadNext).
+		Int("handler_read_rnd", status.HandlerReadRnd).
+		Int("handler_read_rnd_next", status.HandlerReadRndNext)
 }
 
 func (status *ConnectionsStatus) GetTime() time.Time {
