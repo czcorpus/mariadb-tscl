@@ -106,7 +106,7 @@ func GetDBStatus(conn *sql.DB) (*Status, error) {
 			"'Handler_read_rnd', " + // cummulative
 			"'Handler_read_rnd_next', " + // cummulative,
 			"'Bytes_sent', " + // cummulative
-			"'Bytes_received', " + // cummulative
+			"'Bytes_received' " + // cummulative
 			")")
 	if err != nil {
 		return nil, err
