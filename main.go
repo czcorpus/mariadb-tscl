@@ -128,6 +128,8 @@ func main() {
 						HandlerReadNext:              status.HandlerReadNext - prevStatus.HandlerReadNext,
 						HandlerReadRnd:               status.HandlerReadRnd - prevStatus.HandlerReadRnd,
 						HandlerReadRndNext:           status.HandlerReadRndNext - prevStatus.HandlerReadRndNext,
+						BytesSent:                    status.BytesSent - prevStatus.BytesSent,
+						BytesReceived:                status.BytesReceived - prevStatus.BytesReceived,
 					},
 				})
 				prevStatus = status

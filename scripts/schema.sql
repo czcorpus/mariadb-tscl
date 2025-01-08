@@ -16,6 +16,8 @@ create table mariadb_tscl_status_monitoring (
   handler_read_key int,
   handler_read_next int,
   handler_read_rnd int,
-  handler_read_rnd_next int
+  handler_read_rnd_next int,
+  bytes_sent int,
+  bytes_received int
 );
 select create_hypertable('mariadb_tscl_status_monitoring', 'time');
