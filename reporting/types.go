@@ -63,7 +63,9 @@ func (status *ConnectionsStatus) ToTimescaleDB(tableWriter *hltscl.TableWriter) 
 		Int("handler_read_key", status.HandlerReadKey).
 		Int("handler_read_next", status.HandlerReadNext).
 		Int("handler_read_rnd", status.HandlerReadRnd).
-		Int("handler_read_rnd_next", status.HandlerReadRndNext)
+		Int("handler_read_rnd_next", status.HandlerReadRndNext).
+		Int("bytes_sent", status.BytesSent).
+		Int("bytes_received", status.BytesReceived)
 }
 
 func (status *ConnectionsStatus) GetTime() time.Time {

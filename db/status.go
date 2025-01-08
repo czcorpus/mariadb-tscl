@@ -45,6 +45,8 @@ type Status struct {
 	HandlerReadNext              int `json:"handlerReadNext"`
 	HandlerReadRnd               int `json:"handlerReadRnd"`
 	HandlerReadRndNext           int `json:"handlerReadRndNext"`
+	BytesSent                    int `json:"bytesSent"`
+	BytesReceived                int `json:"bytesReceived"`
 }
 
 func (conf *Conf) Validate(context string) error {
@@ -102,7 +104,9 @@ func GetDBStatus(conn *sql.DB) (*Status, error) {
 			"'Handler_read_key', " + // cummulative
 			"'Handler_read_next', " + // cummulative
 			"'Handler_read_rnd', " + // cummulative
-			"'Handler_read_rnd_next' " + // cummulative
+			"'Handler_read_rnd_next', " + // cummulative,
+			"'Bytes_sent', " + // cummulative
+			"'Bytes_received', " + // cummulative
 			")")
 	if err != nil {
 		return nil, err
@@ -144,6 +148,10 @@ func GetDBStatus(conn *sql.DB) (*Status, error) {
 			s.HandlerReadRnd = v
 		case "Handler_read_rnd_next":
 			s.HandlerReadRndNext = v
+		case "Bytes_sent":
+			s.BytesSent = v
+		case "Bytes_received":
+			s.BytesReceived = v
 		}
 	}
 	return &s, nil
