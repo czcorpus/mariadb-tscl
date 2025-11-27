@@ -111,6 +111,7 @@ func GetDBStatus(conn *sql.DB) (*Status, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var k string
 		var v int
